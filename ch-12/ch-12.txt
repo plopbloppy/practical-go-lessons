@@ -1,0 +1,70 @@
+3 Example: a MySQL driver
+3.1 What is MySQL? what is a driver?
+
+Defn: MySQL is an open-source db management sys
+- db: a collection of interrelated data stored tgt in ≥ 1 computerized file
+      organized collection of data stored in a computer sys
+- SQL: Structured Query Language (is a query lang)
+- MySQL: SQL db, will understand cmds written in SQL
+         with MySQL, you crate a db, inject and retrieve data
+         to do this, programs ("clients") are used to issue MySQL cmds by contacting the server (the computer where MySQL is installed and where the data is stored).
+
+    - MySQL provides a CLI (Command Line Interface) program
+    - MySQL workbench offers a graphical interface (GUI)
+- in std lib of Go, the pkg database/sql provides a generic interface around SQL dbs, ie. db systems that can understand SQL
+- the std lib does not offer specific programs to speak to specific db management sys => requires a "driver" to speak to MySQL
+
+Defn: A MySQL driver is a module built to interact with a MySQL db.
+      In this section specifically, github.com/go-sql-driver/mysql
+
+4 Initialization rules
+The initialization of a package takes place in a specific order defined by the go specification :
+1. Imported pkgs are initialized
+    1. Vars are initialized
+    2. Init fcns are run
+2. The pkg itself is initialized
+    1. Vars are initialized
+    2. Init fcns are run
+
+Init fcns are run sequentially, i.e. init fcns are not run concurrently.
+
+5.4 Result analysis
+The seq of a pkg initialization is always the same:
+1. Initialization of vars
+2. run init function(s)
+
+in package-init:
+1. Initialization of pkg currency
+2. Initialization of pkg invoice
+3. Initialization of pkg main
+
+- this seq follows the dependencies of the main pkg
+- it begins with the pkg at the end of the dependency graph (currency)
+
+main pkg
+    | uses
+    \/
+invoice pkg
+    | uses
+    \/
+currency pkg
+
+6 Can we define several init fcns?
+Yes, the runtime will launch init fcns sequentially.
+
+7 Order of variables initialization (adv)
+When the runtime launches the initialization process for a pkg it will proceed by "cycle". Each var has an attribute "ready for initialization".
+A var is "ready" for initialization when:
+- it is not yet initialized
+- it has no initialization exp OR its initialization exp has no dependencies on uninitialized vars
+1. During the first cycle, the runtime will select: the earliest var in declaration order AND ready for initialization
+2. When the first cycle is completed, the second cycle is launched: Go will select the var earliest in declaration order AND ready for initialization
+3. etc...
+n. The process ends when there are no more variables to initialize.
+
+9 Key takeaways
+- Initialization of pkgs takes place in init fcns
+- init fcns are not mandatory
+- A pkg can delcare several init fcns
+- init fcns are called after variable initialization
+- init fcns are run sequentially
