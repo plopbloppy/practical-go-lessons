@@ -1,0 +1,72 @@
+3 What is a type?
+Defn: A type determines a set of values tgt with operations and methods specific to those values
+
+- A set of vals...
+    - a var of type uint32 can contain all vals from 0 to 4 294 967 295
+
+- ... with operations and methods specific to those values
+    - operations and methods are capabilities that are shipped with vals of a type
+    - Go has predeclared types, but we can also create custom types
+    - e.g. Booking type can have a method to compute the total price to pay by the customer
+
+4 Predeclared types
+- Boolean type
+    - bool
+- String type
+    - string
+- numeric types
+    - uint, uint8, uint32, uint64
+    - int, int8, int32, int64
+    - float, float32, float64
+    - complex64, complex128
+
+5 Composite type
+We can use basic types to construct composite types:
+- arrays
+- pointers
+- fcns
+- slices
+- maps channels
+- struct
+- interfaces
+
+5.1 Struct type
+A struct type is a composite type
+struct {
+    Name     string
+    Capacity uint8
+    Rooms    uint8
+    Smoking  bool
+}
+    <Names>  <Types>
+
+A struct is composed of fields. Fields can:
+1. Explicitly specified: in this case, the field has a name and a type (all fields are explicit in example)
+2. Implicitly specified: called embedded fields
+
+12 Key Takeaways
+- Type structs allow you to group data tgt with fields
+- Each field of a struct has a type and a name
+- We can specify fields of a struct explicitly or implicitly (embed a type into the struct type)
+
+type Country struct {
+    Name        string (explicitly)
+    CapitalCity string
+}
+
+type Hotel struct {
+    Name     string
+    Country (type struct, which is also a field of type struct Hotel, making it an embedded field)
+}
+
+- To select a val from a type struct var, use a selector exp, with "."
+hotel := Hotel{
+    Name:    "Gopher team hotel",
+    Country: Country{
+        Name: "France",
+        CapitalCity: "Paris",
+    },
+}
+
+log.Println(hotel.Name)
+log.Println(hotel.Country.CapitalCity)
