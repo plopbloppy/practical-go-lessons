@@ -1,0 +1,96 @@
+2 What is a method?
+- A method is a fcn with a receiver
+- The receiver of a method is a special param
+- The receiver is not listed in the param list but before the method name
+- A method can only have one receiver
+- The receiver has type T or T*
+    - type T: value receiver
+    - type T*: pointer receiver
+- the base type is T
+
+(from cart.go)
+type Cart has two methods: TotalPrice and Lock (both are fcns)
+- They are bound to type Cart
+- The receiver for TotalPrice is called c and is of type *Cart
+- The receiver for Lock is called c and is of type *Cart
+
+3 Methods are capabilities
+We can give additional capabilities to the cart Type:
+- Lock the cart
+- Compute the total price
+
+4 Method Names
+- Method names should be unique inside a method set
+- The method set of type T is the group of all methods with a receiver T
+-           ""          *T                      ""                     T AND *T
+- You CANNOT have two methods with the same name
+  even if the first one has a receiver type and the second has a pointer type
+
+(from main.go)
+Note: the pkg cart belongs to the module "call"
+
+6 Should I use a pointer receiver or a value receiver?
+- When a value receiver is used, the data is copied internally before the method is executed
+- The method uses a copy of the variable
+- This has two consequences:
+1. A method w a value receiver cannot modify the data passed to it
+2. The internal copy process might impact program performance (usually negligible except for heavy type structs)
+- With a pointer receiver, the data passed to it can be modified by the method
+
+7 Receiver type and method call
+- The receiver is an additional fcn param
+- Methods receivers are either pointer or value receivers
+- Ex: the receiver has type *Cart (a pointer to Cart)
+func (c *Cart) TotalPrice() (*money.Money, error) {
+    // ...
+    return total, nil
+}
+
+When this method is called, we use the following notation:
+newCart := cart.Cart{}
+totalPrice, err := newCart.TotalPrice()
+
+Note that Cart ≠ *Cart
+- Go converts the new variable newCart automatically to a pointer
+
+7.0.0.1 Rules
+- Methods with pointer receivers can take a pointer OR a value as receiver
+- Methods with value receivers can take a pointer OR a value as receiver
+
+8 Methods visibility
+- Methods, like fcns, have a visibility
+- When the first letter of the method name is capitalized, the method is exported
+- An exported method is callable outside the pkg
+- A non exported method is NOT callable outside the pkg
+
+9 Receiver name conventions
+- The receiver name is usually a single letter
+- Generally the first letter of the base type
+    - Base type: Cart, receiver name c
+    - Base type: User, receiver name u
+- Stick with the receiver name in all the methods
+    - Use c for all methods of base type Cart
+
+12 Key Takeaways
+- Methods are functions that are attached to a type
+- Each method has a receiver
+- The receiver is an additional parameter specified before the name of the function
+
+func (t T) MethodExampleName() error
+- The receiver can be a pointer to a type T (denoted *T)
+    - We say that the method has a pointer receiver
+- The receiver can have a type T
+    - We say that the method has a value receiver
+- When your method has a pointer receiver, you allow the method to modify the receiver's value
+
+func (c *Cart) Lock() error
+    - This method can update the value of the cart
+- Generally the receiver has a one letter name that is generally the first letter of the receiver type
+    - Ex:
+    func (c *Cart) Lock() error (package time, std lib)
+    func (m *Money) Multiply(mul int64 *Money (package money, module github.com/Rhymond/go-money)
+
+- The first letter of the method name controls its visibility
+    - First letter capitalized: Visible
+    - First letter not capitalized: Impossible to call it from outside the package
+- Method names should be unique in a method set
